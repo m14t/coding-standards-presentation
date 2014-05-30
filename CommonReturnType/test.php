@@ -10,11 +10,11 @@ $c = new \m14t\CollectionWithNonstandardReturnTypes();
 $key = $c->findByVal($searchTerm);
 if (0 === $key) {
     echo "Search term '$searchTerm' is the first value in our collection!\n";
-} else {
-    //-- Uhh oh! We now have a different bug here! We mistakenly assumed that
-    //   the `findByVal` method would always be able to find our value, which
-    //   isn't the case here!
+} elseif (false !== $key) {
     echo "Search term '$searchTerm' NOT is the first value in our collection!\n";
+} else {
+    //-- Handle case where the $searchTerm is not in our collection.
+    echo "Search term '$searchTerm' not even in our collection!\n";
 }
 
 
@@ -22,12 +22,15 @@ echo "\n=== vs ===\n\n";
 
 
 $c = new \m14t\CollectionWithStandardReturnTypes();
-$key = $c->findByVal($searchTerm);
-//-- This will now throw an exception when the key is not found instead of a 
-//   confusing FALSE return value.
+try {
+    $key = $c->findByVal($searchTerm);
 
-if (0 === $key) {
-    echo "Search term '$searchTerm' is the first value in our collection!\n";
-} else {
-    echo "Search term '$searchTerm' NOT is the first value in our collection!\n";
+    if (0 === $key) {
+        echo "Search term '$searchTerm' is the first value in our collection!\n";
+    } else {
+        echo "Search term '$searchTerm' NOT is the first value in our collection!\n";
+    }
+} catch (\m14t\ValueNotFoundException $e) {
+    //-- Handle case where the $searchTerm is not in our collection.
+    echo "Search term '$searchTerm' not even in our collection!\n";
 }
